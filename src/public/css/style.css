@@ -1,0 +1,184 @@
+/*@import url(http://fonts.googleapis.com/css?family=Roboto+Slab:700|Exo+2:300,600,100);*/
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab:100,300,400,700');
+
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+/* Solarized Palette - http://ethanschoonover.com/solarized ---------
+  lightgray      : #819090;
+  gray           : #708284;
+  mediumgray     : #536870;
+  darkgray       : #475B62;
+  darkblue       : #0A2933;
+  darkerblue     : #042029;
+  paleryellow    : #FCF4DC;
+  paleyellow     : #EAE3CB;
+  yellow         : #A57706;
+  orange         : #BD3613;
+  red            : #D11C24;
+  pink           : #C61C6F;
+  purple         : #595AB7;
+  blue           : #2176C7;
+  cyan           : #259286;
+  green          : #738A05; */
+html, body {
+  height: 100%;
+}
+body {
+  font-family: "Exo 2", "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 1.2em;
+  line-height: 1.2em;
+  background: #fbfbfb;
+  color: #475B62;
+}
+
+strong {
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.75em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Slab', "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: 300;
+  color: #358acb;
+  margin-bottom: .4em;
+}
+h2 {
+  font-size: 1.5em;
+}
+h3 {
+  font-size:1.2em;
+  color: #337ab7;
+}
+
+p {
+  margin-bottom: .5em;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  height: 100%;
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.modal-dialog {
+  width: 70%;
+}
+
+.modal-header button {
+  font-size: 1.2em;
+}
+
+.alert {
+  transition: all .3s ease;
+  display: none;
+}
+
+/*.totalAvgBar {*/
+  /*height: 40px;*/
+  /*position: relative;*/
+/*}*/
+/*.totalAvgBar:before {*/
+  /*content: attr(data-val);*/
+  /*z-index: 10000;*/
+  /*color: #fff;*/
+  /*display: block;*/
+  /*position: relative;*/
+/*}*/
+/*.totalAvgBar > span {*/
+  /*position: absolute;*/
+  /*top:0;*/
+  /*left:0;*/
+  /*bottom: 0;*/
+  /*background-color: #29b1ff;*/
+  /*width: 35%;*/
+/*}*/
+
+#table  {
+  position: relative;
+  margin-top: 1em;
+  min-height:100%;
+}
+
+.progress {
+  height: 35px;
+  position: relative;
+}
+
+/*.progress span {*/
+  /*pos*/
+/*}*/
+.values span:nth-child(1) {
+  /*float: left;*/
+}
+
+.values span:nth-child(2) {
+  float: right;
+}
+.values span {
+  clear: both;
+}
+
+.progress-bar {
+  font-size:20px;
+  line-height:35px;
+}
+
+.socket-status {
+  /*display: none;*/
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: .6em;
+  color: #64d64d;
+}
+
+.socket-status > span {
+  padding-left: .5em;
+}
+
+.bar {
+  /*fill: steelblue;*/
+  cursor: pointer;
+}
+
+.bar--positive {
+  fill: steelblue;
+}
+
+.bar--negative {
+  fill: #64d64d;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.toolTip {
+    position: absolute;
+    display: none;
+    width: auto;
+    height: auto;
+    background: none repeat scroll 0 0 white;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: -3px 3px 15px #888888;
+    padding: 5px;
+}
+

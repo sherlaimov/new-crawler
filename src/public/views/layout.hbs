@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/pace.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    {{{body}}}
+</body>
+
+
+<!-- Modal -->
+<div class="modal fade bs-example-modal-lg" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="stopCrawling">Stop
+                            crawling
+                            and see results
+                        </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h2>Average page speed</h2>
+                <div class="values">
+                    <span><span id="minSpeed" class="label label-info"></span> Min speed</span>
+                    <span>Max speed <span id="maxSpeed" class="label label-info"></span></span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar live-speed" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%;">0%
+                    </div>
+                </div>
+
+                <!--<h3 class="modal-title">Average response time <span id="aveResTime"-->
+                <!--class="label label-info"></span></h3>-->
+                <h3 class="modal-title">Pages crawled <span id="pagesCrawled" class="label label-info"></span></h3>
+                <div id="realTimeTable">
+                    <table class="table table-striped">
+                        <thead>
+                            <th>URL</th>
+                            <th>TIME | MS</th>
+                            <th>SIZE | Bytes</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!--<div class="modal-footer"></div>-->
+        </div>
+    </div>
+</div>
+<!-- load the d3.js library -->
+<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="./js/jquery.min.js"></script>
+<script src="./js/handlebars.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/socket.io-client.min.js"></script>
+<script src="./js/socket-client.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/pace.min.js"></script>
+
+</html>
