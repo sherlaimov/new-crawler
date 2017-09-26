@@ -3,7 +3,7 @@ import PubSub from './emitter';
 
 const output = [];
 
-PubSub.on('data-received', dataHandler);
+// PubSub.on('data-received', dataHandler);
 
 function dataHandler(pagesVisited) {
   console.log('INSIDE dataHandler');

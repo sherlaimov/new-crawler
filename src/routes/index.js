@@ -1,6 +1,8 @@
+import { createReadStream } from 'fs';
 import PubSub from '../emitter';
 import Crawler from '../crawler';
 import config from '../config';
+import db from '../database/loki';
 
 const crawler = new Crawler();
 const routes = {};
@@ -25,32 +27,36 @@ routes.index = async (ctx, next) => {
       console.log(`Disconnected: ${connections.length} sockets connected`);
     });
   });
-  await ctx.render('index', { title: 'Basic Crawler Index' });
+  console.log(JSON.stringify(ctx, null, 2));
+  ctx.type = 'html';
+  ctx.body = createReadStream(`${config.rootDir}/public/views/index.html`);
+  // app.use(serve(path.join(config.rootDir, '/public')));
+  // await ctx.render('index', { title: 'Basic Crawler Index' });
 };
 
 routes.crawl = async (ctx, next) => {
-  if (ctx.query.url) {
+  const url = ctx.query.url;
+  if (url) {
+    if (db.getCollection(url) === null) {
+      db.addCollection(
+        url,
+        {
+          // unique: ['id'],
+          // indices: ['id'],
+          // autoupdate: true,
+        },
+      );
+    } else {
+      db.getCollection(url).clear();
+    }
     crawler.crawl(ctx.query.url);
 
     let resolve;
     const promise = new Promise((ok, reject) => (resolve = ok));
 
     PubSub.on('data-sorted', data => {
-      const avgSum = data.reduce((a, b) => a + b.avgTime, 0);
-      const minSum = data.reduce((a, b) => a + b.minTime, 0);
-      const maxSum = data.reduce((a, b) => a + b.maxTime, 0);
-
-      const avgMax = Math.round(maxSum / data.length);
-      const avgMin = Math.round(minSum / data.length);
-      const avgTime = Math.round(avgSum / data.length);
-
-      resolve({
-        reqParams: ctx.query,
-        data,
-        avgTime,
-        avgMin,
-        avgMax,
-      });
+      console.log(data);
+      resolve(data);
       PubSub.removeAllListeners('data-sorted');
     });
     // ctx.response.status = 200;

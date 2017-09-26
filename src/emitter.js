@@ -9,7 +9,7 @@ emitter.on('data-received', e => {
 });
 
 emitter.on('data-sorted', () => {
-  console.log('********* DATA SORTED EVENT');
+  console.log('*********=> DATA SORTED EVENT <=*********');
 });
 
 export default emitter;

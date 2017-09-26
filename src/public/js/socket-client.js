@@ -95,7 +95,7 @@ function averageLoadTime(time) {
 }
 
 socket.on('live-table', data => {
-  console.log(data);
+  // console.log(data);
   averageLoadTime(data.time);
   printTable(data);
 });

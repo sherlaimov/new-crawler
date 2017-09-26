@@ -18,10 +18,13 @@ class Crawler extends events.EventEmitter {
     super();
 
     this.pagesToVisit = [];
+    this.currentSite = null;
     this.on('crawler-stop', () => this.stop(this.pagesToVisit));
   }
 
   crawl(url) {
+    this.currentSite = url;
+    const siteCol = db.getCollection(url);
     return this.visitPage(url)
       .then(info => {
         this.pagesToVisit.push(info.url);
@@ -48,9 +51,7 @@ class Crawler extends events.EventEmitter {
               const { url } = info;
               const { time } = info;
               const { size } = info;
-              const sites = db.getCollection('sites');
-              sites.insert({ url, time, size });
-              // console.log(sites.data);
+              siteCol.insert({ url, time, size });
               this.emit('live-table', { url, time, size });
             }),
           );
@@ -94,7 +95,7 @@ class Crawler extends events.EventEmitter {
         console.log(`An error has occurred \n code: ${error.code}`);
       });
   }
-  
+
   getInternalLinks(baseUrl, $) {
     let relativeLinks = 0;
     const absoluteBase = new RegExp('^' + baseUrl);
@@ -123,13 +124,12 @@ class Crawler extends events.EventEmitter {
     console.log('All pages have been crawled'.bgGreen);
     console.log('Pages visited'.bgGreen);
     console.log(`Total of visited pages ${this.pagesToVisit.length}`.bgCyan);
-    console.log('Starting stats collection...');
-    db.saveDatabase(err => {
-      if (err) console.log(`DB on save attempt error: ${err}`);
-      console.log('DB saved');
-    });
-    this.emit('data-received', this.pagesToVisit);
-    PubSub.emit('data-received', this.pagesToVisit);
+    // db.saveDatabase(err => {
+    //   if (err) console.log(`DB on save attempt error: ${err}`);
+    //   console.log('DB saved');
+    // });
+    // this.emit('data-received', this.pagesToVisit);
+    PubSub.emit('data-received', this.currentSite);
     this.pagesToVisit = [];
   }
 }

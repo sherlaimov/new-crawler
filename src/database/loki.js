@@ -1,28 +1,28 @@
 import Loki from 'lokijs';
 import config from '../config';
 
-const db = new Loki(`${config.rootDir}/database/db.json`);
+const db = new Loki(`${config.rootDir}/database/db.json`, { autosave: true });
 
 db.loadDatabase({}, err => {
   if (err) {
     console.log(`Error loading DB : ${err}`);
   } else {
     console.log('database loaded.');
-    if (db.getCollection('sites') === null) {
-      db.addCollection('sites', {
-        unique: ['id'],
-        // indices: ['id'],
-        autoupdate: true,
-      });
-    } else {
-      db.getCollection('sites').clear();
-    }
-    db.saveDatabase(err => {
-      if (err) {
-        console.log(`DB on save attempt error: ${err}`);
-      }
-      console.log('DB saved from loki.js file');
-    });
+    // if (db.getCollection('sites') === null) {
+    //   db.addCollection('sites', {
+    //     unique: ['id'],
+    //     // indices: ['id'],
+    //     autoupdate: true,
+    //   });
+    // } else {
+    //   db.getCollection('sites').clear();
+    // }
+    // db.saveDatabase(err => {
+    //   if (err) {
+    //     console.log(`DB on save attempt error: ${err}`);
+    //   }
+    //   console.log('DB saved from loki.js file');
+    // });
   }
 });
 

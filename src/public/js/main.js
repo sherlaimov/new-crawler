@@ -21,7 +21,7 @@
       };
       self.elem = elem;
       self.$elem = $(elem);
-      // self.template = Handlebars.compile($('#table-template').html());
+      self.template = Handlebars.compile($('#table-template').html());
       self.$modal = $('#statsModal');
       self.$form = $('#urlForm');
       self.$stopBtn = $('#stopCrawling');
@@ -63,10 +63,10 @@
     },
 
     render: function(data) {
-      console.log(data);
       const self = this;
       if ('data' in data) {
-        // self.$elem.html('').append(self.template(data));
+        console.log(data);
+        self.$elem.html('').append(self.template(data));
         // createChart(data);
         barChart(data);
       }
@@ -107,12 +107,12 @@
       $.each(data, (rowIndex, r) => {
         if (rowIndex === 0) {
           Object.keys(r).forEach((key, i) => {
-            let th = $('<th/>');
+            const th = $('<th/>');
             th.text(key);
             thead.append(th);
           });
         }
-        let row = $('<tr/>');
+        const row = $('<tr/>');
 
         row.append($('<td>').text(++rowIndex));
         $.each(r, function(colIndex, c) {
@@ -134,7 +134,7 @@
   Handlebars.registerHelper('makeLink', (text, url) => {
     text = Handlebars.Utils.escapeExpression(text);
     url = Handlebars.Utils.escapeExpression(url);
-    let link = `<a href="${text}">${url}</a>`;
+    const link = `<a href="${text}">${url}</a>`;
     return new Handlebars.SafeString(link);
   });
 
@@ -145,7 +145,7 @@
   function barChart({ data: data, avgMax: avgMax, avgMin: avgMin, avgTime: avgTime }) {
     // Variable declaration
     const margin = { top: 20, right: 20, bottom: 40, left: 30 };
-    let height = 800 - margin.top - margin.bottom;
+    const height = 800 - margin.top - margin.bottom;
     let width = 900 - margin.left - margin.right;
     const colors = d3
       .scaleLinear()
