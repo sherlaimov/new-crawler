@@ -4,45 +4,38 @@
 
 (function($, Handlebars, d3) {
   const Twitch = {
-    init: function(elem, options) {
-      console.log('INITIALIZED');
-      const self = this;
-      self.options = options || {};
-      self.url = 'http://localhost:3000/';
-      self.options.ajax = {
-        url: self.url + 'crawl/',
+    init(elem, options) {
+      this.options = options || {};
+      this.url = 'http://localhost:3000/';
+      this.options.ajax = {
+        url: `${this.url}crawl/`,
         type: 'GET',
-        // data: {
-        //    type: 'suggest',
-        //    query: this.options.search
-        // },
         dataType: 'json',
         contentType: 'application/json: charset=utf-8',
       };
-      self.elem = elem;
-      self.$elem = $(elem);
-      self.template = Handlebars.compile($('#table-template').html());
-      self.$modal = $('#statsModal');
-      self.$form = $('#urlForm');
-      self.$stopBtn = $('#stopCrawling');
-      self.$form.on('submit', e => {
+      this.elem = elem;
+      this.$elem = $(elem);
+      this.template = Handlebars.compile($('#table-template').html());
+      this.$modal = $('#statsModal');
+      this.$form = $('#urlForm');
+      this.$stopBtn = $('#stopCrawling');
+      this.$checkDataBtn = $('#checkData');
+      this.$form.on('submit', e => {
         e.preventDefault();
-        console.log('SUBMIT');
         const url = document.querySelector('#urlInput').value;
-        if (self.validateURL(url)) {
-          self
-            .fetch({
-              data: self.$form.serialize(),
-            })
+        if (this.validateURL(url)) {
+          this.fetch({
+            data: this.$form.serialize(),
+          })
             .done(data => {
-              self.render(data);
-              self.$modal.modal('hide');
+              this.render(data);
+              this.$modal.modal('hide');
             })
             .fail(e => {
               console.log(e);
               console.log('Query failed');
             });
-          self.$modal.modal({ keyboard: false });
+          this.$modal.modal({ keyboard: false });
         } else {
           const alert = document.querySelector('.alert');
           alert.innerHTML = `<strong>${url}</strong> is not a valid URL. Please, enter a valid one which starts with either "http://" or "www."`;
@@ -52,78 +45,50 @@
           }, 2500);
         }
       });
-      self.$modal.on('hidden.bs.modal', e => {
-        self.$modal.find('#realTimeTable tbody').html('');
+      this.$modal.on('hidden.bs.modal', e => {
+        this.$modal.find('#realTimeTable tbody').html('');
         document.querySelector('#pagesCrawled').innerHTML = '';
       });
 
-      self.$stopBtn.on('click', e => {
-        self.fetch({ url: self.url + 'stop/' });
+      this.$stopBtn.on('click', e => {
+        this.fetch({ url: `${this.url}stop/` });
+      });
+      this.$checkDataBtn.on('click', e => {
+        this.fetch({ url: `${this.url}checkData/` })
+          .done(data => {
+            console.log(data);
+            this.render(data);
+          })
+          .fail(e => {
+            console.log(e);
+            console.log('Query failed');
+          });
       });
     },
 
-    render: function(data) {
-      const self = this;
+    render(data) {
       if ('data' in data) {
         console.log(data);
-        self.$elem.html('').append(self.template(data));
-        // createChart(data);
+        this.$elem.html('').append(this.template(data));
         barChart(data);
       }
       if (data.avgTime) {
-        // let end = data.avgMax - data.avgMin;
-        // let newAvg = data.avgTime - data.avgMin;
-        // let val = ( newAvg / end ) * 100;
-        let newAvg = Math.round((data.avgTime - data.avgMin) / (data.avgMax - data.avgMin) * 100);
-        console.log(newAvg);
+        const newAvg = Math.round((data.avgTime - data.avgMin) / (data.avgMax - data.avgMin) * 100);
         const progressBar = document.querySelector('.progress-bar');
         progressBar.style.width = `${newAvg}%`;
         progressBar.innerHTML = `Average page speed ${data.avgTime} ms`;
-        //const span = document.createElement('span');
       }
     },
 
-    fetch: function(options) {
-      const self = this;
-      const opts = $.extend({}, self.options.ajax, options);
+    fetch(options) {
+      const opts = $.extend({}, this.options.ajax, options);
       return $.ajax(opts);
     },
-    validateURL: function(textval) {
-      var urlregex = new RegExp(
+    validateURL(textval) {
+      const urlregex = new RegExp(
         '^(http://www.|https://www.|ftp://www.|www.|http://|https://){1}([0-9A-Za-z]+.)',
       );
       return urlregex.test(textval);
-    },
-
-    renderTable: function(elem, data) {
-      const self = this;
-      //console.log(data);
-      const table = $(document.createElement('table')).addClass('table table-striped');
-
-      const thead = $(document.createElement('thead'));
-      thead.append($('<th>').text('#'));
-      const tbody = $(document.createElement('tbody'));
-
-      $.each(data, (rowIndex, r) => {
-        if (rowIndex === 0) {
-          Object.keys(r).forEach((key, i) => {
-            const th = $('<th/>');
-            th.text(key);
-            thead.append(th);
-          });
-        }
-        const row = $('<tr/>');
-
-        row.append($('<td>').text(++rowIndex));
-        $.each(r, function(colIndex, c) {
-          row.append($('<td>').text(c));
-          tbody.append(row);
-        });
-      });
-      table.append(thead);
-      table.append(tbody);
-      //console.log(elem);
-      return elem.append(table);
     },
   };
 
@@ -142,7 +107,7 @@
     return parseInt(value) + 1;
   });
 
-  function barChart({ data: data, avgMax: avgMax, avgMin: avgMin, avgTime: avgTime }) {
+  function barChart({ data, avgMax, avgMin, avgTime }) {
     // Variable declaration
     const margin = { top: 20, right: 20, bottom: 40, left: 30 };
     const height = 800 - margin.top - margin.bottom;
@@ -159,9 +124,7 @@
       // .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
     // .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-    const chartG = svg
-      .append('g')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    const chartG = svg.append('g').attr('transform', `translate( ${margin.left}, ${margin.top})`);
 
     // X scale
     const x = d3.scaleLinear().range([0, width]);
@@ -172,20 +135,18 @@
 
     const xAxis = d3.axisTop(x);
     const yAxis = d3.axisLeft(y);
-    //.tickSize(6, 4);
+    // .tickSize(6, 4);
 
     // x.domain(d3.extent(data, function (d) { return d.avgTime;})).nice();
     x.domain([avgMin, avgMax]);
-    y.domain(d3.range(0, data.length).reverse());
+    y.domain(d3.range(1, data.length + 1).reverse());
 
     chartG
       .selectAll('.bar')
       .data(data)
       .enter()
       .append('rect')
-      .attr('class', function(d) {
-        return 'bar bar--' + (d.avgTime < avgTime ? 'negative' : 'positive');
-      });
+      .attr('class', d => `bar bar-${d.avgTime < avgTime ? 'negative' : 'positive'}`);
 
     chartG
       .append('g')
@@ -193,13 +154,13 @@
       .attr('transform', 'translate(0,0)');
     // .call(xAxis);
 
-    var tickNegative = chartG.append('g').attr('class', 'y axis');
+    const yAxisG = chartG.append('g').attr('class', 'y axis');
     // .attr('transform', 'translate(' + x(avgTime) + ',0)')
     // .call(yAxis);
 
-    tickNegative.select('line').attr('x2', 6);
+    yAxisG.select('line').attr('x2', 6);
 
-    tickNegative
+    yAxisG
       .select('text')
       .attr('x', 9)
       .style('text-anchor', 'start');
@@ -215,7 +176,8 @@
     // .style('opacity', 0);
 
     // Drawing ///////////////////////////////////
-    //////////////////////////////////////////////
+    // ////////////////////////////////////////////
+
     function drawChart() {
       // reset the width
       width = parseInt(d3.select('.container').style('width'), 10) - margin.left - margin.right;
@@ -234,26 +196,19 @@
 
       chartG
         .selectAll('.bar')
-        .style('fill', (d, i) => colors(d.avgTime))
-        .attr('x', function(d) {
-          return x(Math.min(avgTime, d.avgTime));
-        })
-        .attr('y', function(d, i) {
-          return y(i);
-        })
-        .attr('width', function(d) {
-          return Math.abs(x(d.avgTime) - x(avgTime));
-        })
-        .attr('height', 25);
+        .style('fill', d => colors(d.avgTime))
+        .attr('x', d => x(Math.min(avgTime, d.avgTime)))
+        .attr('y', (d, i) => y(++i))
+        .attr('width', d => Math.abs(x(d.avgTime) - x(avgTime)))
+        .attr('height', 20);
 
-      tickNegative.attr('transform', 'translate(' + x(avgTime) + ',0)').call(yAxis);
+      yAxisG.attr('transform', 'translate(' + x(avgTime) + ',0)').call(yAxis);
     }
 
-    //CHART EVENTS
+    // CHART EVENTS
     svg
       .selectAll('.bar')
       .on('mousemove', function(d, i, e) {
-        //console.dir(this);
         tooltip.transition().style('opacity', 0.9);
 
         tooltip
@@ -265,15 +220,13 @@
           .style('top', d3.event.pageY - 100 + 'px')
           .style('display', 'inline-block');
 
-        // console.log(d3.select(this).style('fill'));
         if (d3.select(this).style('fill') != 'rgb(251, 246, 6)') {
           tempColor = this.style.fill;
         }
+
         d3
           .select(this)
           .transition()
-          //.style('opacity', .5)
-          // .style('fill', '#fbf606')
           .style('stroke', '#337ab7');
       })
       .on('mouseout', function(d) {
@@ -283,8 +236,6 @@
           .select(this)
           .transition()
           .duration(250)
-          //.style('opacity', 1)
-          // .style('fill', tempColor)
           .style('stroke', 'none');
       });
 
@@ -293,9 +244,9 @@
     });
 
     // Resizing //////////////////////////////////
-    //////////////////////////////////////////////
+    // ////////////////////////////////////////////
     function debounce(func, wait, immediate) {
-      var timeout;
+      let timeout;
       return function() {
         var context = this,
           args = arguments;
