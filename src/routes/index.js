@@ -11,7 +11,7 @@ routes.index = async (ctx, next) => {
   const io = ctx.io;
   const connections = [];
 
-  io.on('connection', function(ctx, data) {
+  io.on('connection', (ctx, data) => {
     // console.log(socket);
     const socket = ctx.socket;
     console.log('io data', data);
@@ -29,23 +29,59 @@ routes.index = async (ctx, next) => {
   });
   console.log(JSON.stringify(ctx, null, 2));
   ctx.type = 'html';
-  ctx.body = createReadStream(`${config.rootDir}/public/views/index.html`);
+  ctx.body = createReadStream(`${config.rootDir}/../public/views/index.html`);
   // app.use(serve(path.join(config.rootDir, '/public')));
   // await ctx.render('index', { title: 'Basic Crawler Index' });
+};
+
+function statsCollector() {
+  const pagesCall = db.collections[0];
+  const pages = pagesCall.find();
+  const data = [];
+  const stats = {};
+
+  const uniqueURLs = pages.map(page => page.url).filter((url, i, arr) => arr.indexOf(url) === i);
+
+  uniqueURLs.forEach(url => {
+    const info = {};
+    const uniqueObj = pagesCall.find({ url });
+    info.url = url;
+    info.avgTime = Math.round(
+      uniqueObj.map(obj => obj.time).reduce((a, b) => a + b) / uniqueObj.length,
+    );
+    info.maxTime = Math.max(...uniqueObj.map(obj => obj.time));
+    info.minTime = Math.min(...uniqueObj.map(obj => obj.time));
+    info.size = uniqueObj.map(obj => obj.size).pop();
+    data.push(info);
+  });
+  stats.avgTime = Math.round(data.map(obj => obj.avgTime).reduce((a, b) => a + b) / data.length);
+  stats.avgMin = Math.min(...data.map(obj => obj.avgTime));
+  stats.avgMax = Math.max(...data.map(obj => obj.avgTime));
+  stats.data = data;
+  return stats;
+}
+
+routes.checkData = async ctx => {
+  console.log('checkData');
+  try {
+    const data = await statsCollector();
+    ctx.status = 200;
+    ctx.response.set('Content-type', 'application/json');
+    ctx.body = data;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 routes.crawl = async (ctx, next) => {
   const url = ctx.query.url;
   if (url) {
     if (db.getCollection(url) === null) {
-      db.addCollection(
-        url,
-        {
-          // unique: ['id'],
-          // indices: ['id'],
-          // autoupdate: true,
-        },
-      );
+      db.addCollection(url, {
+        // unique: ['id'],
+        // indices: ['id'],
+        // autoupdate: true,
+      });
     } else {
       db.getCollection(url).clear();
     }

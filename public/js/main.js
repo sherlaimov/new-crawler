@@ -117,27 +117,30 @@
       .domain([avgMin, avgMax])
       .range(['#f4eb42', '#f44141']);
 
-    // Add svg to
+    // Adding SVG
     const svg = d3
       .select('#chart')
       .append('svg')
-      // .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
-    // .append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
     const chartG = svg.append('g').attr('transform', `translate( ${margin.left}, ${margin.top})`);
 
     // X scale
     const x = d3.scaleLinear().range([0, width]);
     const y = d3
       .scaleBand()
-      .rangeRound([height, 0])
-      .padding(0);
+      .range([height, 0])
+      // .padding(0.5)
+      // .range([height, 0])
+      // .rangeRound([height, 0])
+      // .padding(0.5);
+      // .paddingInner(0.4);
+      .paddingOuter(0.1);
 
     const xAxis = d3.axisTop(x);
     const yAxis = d3.axisLeft(y);
     // .tickSize(6, 4);
 
-    // x.domain(d3.extent(data, function (d) { return d.avgTime;})).nice();
     x.domain([avgMin, avgMax]);
     y.domain(d3.range(1, data.length + 1).reverse());
 
@@ -152,11 +155,8 @@
       .append('g')
       .attr('class', 'x axis')
       .attr('transform', 'translate(0,0)');
-    // .call(xAxis);
 
     const yAxisG = chartG.append('g').attr('class', 'y axis');
-    // .attr('transform', 'translate(' + x(avgTime) + ',0)')
-    // .call(yAxis);
 
     yAxisG.select('line').attr('x2', 6);
 
@@ -165,15 +165,10 @@
       .attr('x', 9)
       .style('text-anchor', 'start');
 
-    let tempColor;
     const tooltip = d3
       .select('body')
       .append('div')
       .attr('class', 'toolTip');
-    // .style('position', 'absolute')
-    // .style('padding', '0 10px')
-    // .style('background', '#fff')
-    // .style('opacity', 0);
 
     // Drawing ///////////////////////////////////
     // ////////////////////////////////////////////
@@ -202,10 +197,11 @@
         .attr('width', d => Math.abs(x(d.avgTime) - x(avgTime)))
         .attr('height', 20);
 
-      yAxisG.attr('transform', 'translate(' + x(avgTime) + ',0)').call(yAxis);
+      yAxisG.attr('transform', `translate(${x(avgTime)} ,0)`).call(yAxis);
     }
 
     // CHART EVENTS
+    let tempColor;
     svg
       .selectAll('.bar')
       .on('mousemove', function(d, i, e) {
@@ -247,15 +243,13 @@
     // ////////////////////////////////////////////
     function debounce(func, wait, immediate) {
       let timeout;
-      return function() {
-        var context = this,
-          args = arguments;
+      return (...args) => {
         clearTimeout(timeout);
-        timeout = setTimeout(function() {
+        timeout = setTimeout(() => {
           timeout = null;
-          if (!immediate) func.apply(context, args);
+          if (!immediate) func.apply(this, args);
         }, wait);
-        if (immediate && !timeout) func.apply(context, args);
+        if (immediate && !timeout) func.apply(this, args);
       };
     }
     // redraw chart on resize

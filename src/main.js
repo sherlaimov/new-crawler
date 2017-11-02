@@ -3,7 +3,6 @@ import Koa from 'koa';
 import _ from 'koa-route';
 import bodyParser from 'koa-bodyparser';
 import morgan from 'koa-morgan';
-import hbs from 'koa-hbs';
 import serve from 'koa-static';
 import IO from 'koa-socket';
 import db from './database/loki';
@@ -25,20 +24,14 @@ app.use(async (ctx, next) => {
 
 app.context.io = io;
 
-app.use(serve(path.join(config.rootDir, '/public')));
+app.use(serve(path.join(config.publicDir)));
 app.use(bodyParser());
 app.use(morgan('combined'));
-
-app.use(
-  hbs.middleware({
-    viewPath: path.join(config.rootDir, './public/views'),
-    defaultLayout: 'layout',
-  }),
-);
 
 app.use(_.get('/', routes.index));
 
 app.use(_.get('/crawl', routes.crawl));
+app.use(_.get('/checkData', routes.checkData));
 app.use(_.get('/stop', routes.stop));
 app.use(_.post('/data', routes.data));
 
@@ -51,6 +44,11 @@ io.on('join', (ctx, data) => {
 app.on('error', err => {
   console.log('server error', err);
 });
+// process.on('SIGINT', () => {
+//   console.log('\nGracefully shutting down from SIGINT (Ctrl+C)');
+
+//   console.log('Disabling Adapter...');
+// });
 app.listen(3000, () => {
   // db.loadDatabase({}, err => {
   //   if (err) {

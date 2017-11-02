@@ -83,25 +83,6 @@ p {
   display: none;
 }
 
-/*.totalAvgBar {*/
-  /*height: 40px;*/
-  /*position: relative;*/
-/*}*/
-/*.totalAvgBar:before {*/
-  /*content: attr(data-val);*/
-  /*z-index: 10000;*/
-  /*color: #fff;*/
-  /*display: block;*/
-  /*position: relative;*/
-/*}*/
-/*.totalAvgBar > span {*/
-  /*position: absolute;*/
-  /*top:0;*/
-  /*left:0;*/
-  /*bottom: 0;*/
-  /*background-color: #29b1ff;*/
-  /*width: 35%;*/
-/*}*/
 
 #table  {
   position: relative;
@@ -114,9 +95,7 @@ p {
   position: relative;
 }
 
-/*.progress span {*/
-  /*pos*/
-/*}*/
+
 .values span:nth-child(1) {
   /*float: left;*/
 }

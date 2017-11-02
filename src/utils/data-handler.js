@@ -51,6 +51,7 @@ function dataHandler(url) {
 
   Promise.all(promises)
     .then(results => {
+      console.log('*** Promise.all resolved ****');
       pagesColl.insert(results);
     })
     .then(() => {
@@ -63,7 +64,7 @@ function dataHandler(url) {
 
 function statsCollector(url) {
   const pagesCall = db.getCollection(url);
-  const pages = db.getCollection(url).find();
+  const pages = pagesCall.find();
   const data = [];
   const stats = {};
 
